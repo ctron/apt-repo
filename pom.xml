@@ -8,7 +8,7 @@
 	<description>Create APT based repositories</description>
 	<packaging>maven-plugin</packaging>
 
-	<url>http://dentrassi.de/maven-apt-repo</url>
+	<url>http://dentrassi.de/apt-repo</url>
 
 	<scm>
 		<url>https://github.com/ctron/apt-repo</url>
