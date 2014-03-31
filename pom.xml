@@ -4,8 +4,10 @@
 	<groupId>de.dentrassi.build</groupId>
 	<artifactId>apt-repo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	
 	<name>APT Repository Generator</name>
 	<description>Create APT based repositories</description>
+	
 	<packaging>maven-plugin</packaging>
 
 	<url>http://dentrassi.de/apt-repo</url>
