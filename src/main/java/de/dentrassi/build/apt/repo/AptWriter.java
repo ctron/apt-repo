@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,6 +39,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
@@ -153,6 +155,7 @@ public class AptWriter
     {
         this.console = console;
         this.configuration = configuration.clone ();
+
         this.digestersRelease.add ( new SimpleDigester ( "MD5Sum", MD5Digest.class ) );
         this.digestersRelease.add ( new SimpleDigester ( "SHA1", SHA1Digest.class ) );
         this.digestersRelease.add ( new SimpleDigester ( "SHA256", SHA256Digest.class ) );
@@ -264,6 +267,7 @@ public class AptWriter
                 dir = new File ( dir, "binary-" + arch );
 
                 digestPackageList ( pw, d, distDir, new File ( dir, "Packages" ).getCanonicalFile () );
+                digestPackageList ( pw, d, distDir, new File ( dir, "Packages.gz" ).getCanonicalFile () );
                 digestPackageList ( pw, d, distDir, new File ( dir, "Release" ).getCanonicalFile () );
             }
         }
@@ -327,18 +331,15 @@ public class AptWriter
 
         this.console.info ( "Writing: " + packagesFile );
 
-        final PrintStream ps1 = new PrintStream ( packagesFile );
-        try
+        try ( final PrintStream ps1 = new PrintStream ( packagesFile ) )
         {
             for ( final BinaryPackagePackagesFile cf : files )
             {
                 ps1.println ( cf.toString () );
             }
         }
-        finally
-        {
-            ps1.close ();
-        }
+
+        compressFile ( packagesFile );
 
         // Release
 
@@ -352,14 +353,23 @@ public class AptWriter
         crf.set ( "Label", component.getLabel () );
         crf.set ( "Origin", component.getDistribution ().getOrigin () );
 
-        final FileOutputStream os = new FileOutputStream ( releaseFile );
-        try
+        try ( final FileOutputStream os = new FileOutputStream ( releaseFile ) )
         {
             os.write ( crf.toString ().getBytes ( "UTF-8" ) );
         }
-        finally
+    }
+
+    private void compressFile ( final File packagesFile ) throws IOException
+    {
+        this.console.debug ( "Compressing: " + packagesFile );
+
+        final File compressedFile = new File ( packagesFile.getAbsolutePath () + ".gz" );
+        try ( final OutputStream os = new GZIPOutputStream ( new FileOutputStream ( compressedFile ) ) )
         {
-            os.close ();
+            try ( final InputStream is = new FileInputStream ( packagesFile ) )
+            {
+                IOUtils.copy ( is, os );
+            }
         }
     }
 
@@ -438,8 +448,7 @@ public class AptWriter
 
     private BinaryPackagePackagesFile readArtifact ( final File packageFile ) throws Exception
     {
-        final ArArchiveInputStream in = new ArArchiveInputStream ( new FileInputStream ( packageFile ) );
-        try
+        try ( final ArArchiveInputStream in = new ArArchiveInputStream ( new FileInputStream ( packageFile ) ) )
         {
             ArchiveEntry ar;
             while ( ( ar = in.getNextEntry () ) != null )
@@ -449,9 +458,7 @@ public class AptWriter
                     continue;
                 }
 
-                final TarArchiveInputStream inputStream = new TarArchiveInputStream ( new GZIPInputStream ( in ) );
-
-                try
+                try ( final TarArchiveInputStream inputStream = new TarArchiveInputStream ( new GZIPInputStream ( in ) ) )
                 {
 
                     TarArchiveEntry te;
@@ -465,15 +472,7 @@ public class AptWriter
                     }
 
                 }
-                finally
-                {
-                    inputStream.close ();
-                }
             }
-        }
-        finally
-        {
-            IOUtils.closeQuietly ( in );
         }
         return null;
     }
@@ -504,12 +503,9 @@ public class AptWriter
 
     public static String digest ( final File file, final Digest digest ) throws IOException
     {
-        InputStream in = null;
-        try
+        try ( final InputStream in = new FileInputStream ( file ) )
         {
             final byte[] buffer = new byte[4096];
-
-            in = new FileInputStream ( file );
             int rc;
             while ( ( rc = in.read ( buffer ) ) > 0 )
             {
@@ -523,10 +519,6 @@ public class AptWriter
                 sb.append ( String.format ( "%02x", b ) );
             }
             return sb.toString ();
-        }
-        finally
-        {
-            IOUtils.closeQuietly ( in );
         }
     }
 
