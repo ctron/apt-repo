@@ -21,9 +21,9 @@
 	<url>http://dentrassi.de/apt-repo</url>
 
 	<scm>
-		<url>https://github.com/ctron/apt-repo</url>
-		<connection>scm:git:git://github.com:ctron/apt-repo.git</connection>
-		<developerConnection>scm:git:git://github.com:ctron/apt-repo.git</developerConnection>
+		<connection>scm:git:git@github.com:ctron/apt-repo.git</connection>
+		<developerConnection>scm:git:git@github.com:ctron/apt-repo.git</developerConnection>
+		<url>git@github.com:ctron/apt-repo.git</url>
 	</scm>
 
 	<inceptionYear>2014</inceptionYear>
