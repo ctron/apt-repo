@@ -26,13 +26,21 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import de.dentrassi.build.apt.repo.AptWriter;
 import de.dentrassi.build.apt.repo.Component;
 import de.dentrassi.build.apt.repo.Configuration;
 import de.dentrassi.build.apt.repo.Distribution;
-import de.dentrassi.build.apt.repo.AptWriter;
 
 /**
- * Create an APT repository structure
+ * Create an APT repository structure.
+ * <p>
+ * It takes all <code>.deb</code> files and creates one APT repository out of
+ * it.
+ * </p>
+ * <p>
+ * At the moment the plugin itself can only create a repository with one
+ * distribution and one component.
+ * </p>
  * 
  * @author Jens Reimann
  */
@@ -68,6 +76,9 @@ public class RepositoryMojo extends AbstractMojo
     @Parameter ( required = true, defaultValue = "devel" )
     private String distributionName;
 
+    /**
+     * The label of the distribution
+     */
     @Parameter
     private String distributionLabel;
 
@@ -77,6 +88,9 @@ public class RepositoryMojo extends AbstractMojo
     @Parameter ( required = true, defaultValue = "main" )
     private String componentName;
 
+    /**
+     * The label of the component
+     */
     @Parameter
     private String componentLabel;
 
