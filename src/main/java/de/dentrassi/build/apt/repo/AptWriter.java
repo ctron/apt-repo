@@ -47,6 +47,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.CanReadFileFilter;
@@ -446,24 +447,19 @@ public class AptWriter
             ArchiveEntry ar;
             while ( ( ar = in.getNextEntry () ) != null )
             {
-                if ( !ar.getName ().equals ( "control.tar.gz" ) )
+                if ( ar.getName().equals ( "control.tar.gz" ) || ar.getName().equals ( "control.tar.xz" ) )
                 {
-                    continue;
-                }
+                    try (final InputStream compressedInputStream = ar.getName().endsWith(".gz") ? new GZIPInputStream ( in ) : new XZCompressorInputStream( in );
+                         final TarArchiveInputStream inputStream = new TarArchiveInputStream ( compressedInputStream ) ) {
 
-                try ( final TarArchiveInputStream inputStream = new TarArchiveInputStream ( new GZIPInputStream ( in ) ) )
-                {
-
-                    TarArchiveEntry te;
-                    while ( ( te = inputStream.getNextTarEntry () ) != null )
-                    {
-                        if ( !te.getName ().equals ( "./control" ) )
-                        {
-                            continue;
+                        TarArchiveEntry te;
+                        while ((te = inputStream.getNextTarEntry()) != null) {
+                            if (!te.getName().equals("./control")) {
+                                continue;
+                            }
+                            return convert(new BinaryPackageControlFile(inputStream), packageFile);
                         }
-                        return convert ( new BinaryPackageControlFile ( inputStream ), packageFile );
                     }
-
                 }
             }
         }
