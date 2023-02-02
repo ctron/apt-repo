@@ -167,12 +167,12 @@ public class AptWriter
     {
         if ( this.configuration.getTargetFolder ().exists () )
         {
-            throw new IllegalStateException ( "The target path must not exists: " + this.configuration.getTargetFolder () );
+            throw new IllegalStateException ( "The target path must not exist: " + this.configuration.getTargetFolder () );
         }
 
         if ( !this.configuration.getSourceFolder ().isDirectory () )
         {
-            throw new IllegalStateException ( "The source path must exists and must be a directory: " + this.configuration.getTargetFolder () );
+            throw new IllegalStateException ( "The source path must exist and must be a directory: " + this.configuration.getTargetFolder () );
         }
 
         this.configuration.validate ();
