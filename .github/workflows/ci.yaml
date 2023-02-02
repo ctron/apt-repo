@@ -22,3 +22,6 @@ jobs:
 
       - run: |
           mvn package -B
+
+      - run: |
+          mvn integration-test -B
