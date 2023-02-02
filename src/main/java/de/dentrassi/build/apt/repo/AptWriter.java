@@ -25,8 +25,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.security.MessageDigest;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -50,10 +52,6 @@ import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.CanReadFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.bouncycastle.crypto.Digest;
-import org.bouncycastle.crypto.digests.MD5Digest;
-import org.bouncycastle.crypto.digests.SHA1Digest;
-import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.vafer.jdeb.Console;
 import org.vafer.jdeb.debian.BinaryPackageControlFile;
 
@@ -96,7 +94,7 @@ public class AptWriter
 
     private interface Digester
     {
-        public Digest create ();
+        public MessageDigest create ();
 
         public String getName ();
     }
@@ -106,12 +104,12 @@ public class AptWriter
 
         private final String name;
 
-        private final Class<? extends Digest> clazz;
+        private final String javaName;
 
-        public SimpleDigester ( final String name, final Class<? extends Digest> clazz )
+        public SimpleDigester ( final String name, String javaName )
         {
             this.name = name;
-            this.clazz = clazz;
+            this.javaName = javaName;
         }
 
         @Override
@@ -121,11 +119,11 @@ public class AptWriter
         }
 
         @Override
-        public Digest create ()
+        public MessageDigest create ()
         {
             try
             {
-                return this.clazz.newInstance ();
+                return MessageDigest.getInstance ( this.javaName );
             }
             catch ( final Exception e )
             {
@@ -156,13 +154,13 @@ public class AptWriter
         this.console = console;
         this.configuration = configuration.clone ();
 
-        this.digestersRelease.add ( new SimpleDigester ( "MD5Sum", MD5Digest.class ) );
-        this.digestersRelease.add ( new SimpleDigester ( "SHA1", SHA1Digest.class ) );
-        this.digestersRelease.add ( new SimpleDigester ( "SHA256", SHA256Digest.class ) );
+        this.digestersRelease.add ( new SimpleDigester ( "MD5Sum", "MD5" ) );
+        this.digestersRelease.add ( new SimpleDigester ( "SHA1", "SHA-1" ) );
+        this.digestersRelease.add ( new SimpleDigester ( "SHA256", "SHA-256" ) );
 
-        this.digestersPackage.add ( new SimpleDigester ( "MD5sum", MD5Digest.class ) ); // yes, this is really the difference
-        this.digestersPackage.add ( new SimpleDigester ( "SHA1", SHA1Digest.class ) );
-        this.digestersPackage.add ( new SimpleDigester ( "SHA256", SHA256Digest.class ) );
+        this.digestersPackage.add ( new SimpleDigester ( "MD5sum", "MD5" ) ); // yes, this is really the difference
+        this.digestersPackage.add ( new SimpleDigester ( "SHA1", "SHA-1" ) );
+        this.digestersPackage.add ( new SimpleDigester ( "SHA256", "SHA-256" ) );
     }
 
     public void build () throws Exception
@@ -189,10 +187,10 @@ public class AptWriter
 
         final FileFilter debFilter = new AndFileFilter ( //
         Arrays.asList ( //
-        CanReadFileFilter.CAN_READ, //
-                FileFileFilter.FILE, //
+                CanReadFileFilter.CAN_READ, //
+                FileFileFilter.INSTANCE, //
                 new SuffixFileFilter ( ".deb" ) //
-        ) //
+            ) //
         );
 
         for ( final File packageFile : this.configuration.getSourceFolder ().listFiles ( debFilter ) )
@@ -237,14 +235,9 @@ public class AptWriter
             rf.set ( d.getName (), digestPackageLists ( rf, d, dist ) );
         }
 
-        final FileOutputStream os = new FileOutputStream ( new File ( dir, "Release" ) );
-        try
+        try ( FileOutputStream os = new FileOutputStream ( new File ( dir, "Release" ) ) )
         {
-            os.write ( rf.toString ().getBytes ( "UTF-8" ) );
-        }
-        finally
-        {
-            os.close ();
+            os.write(rf.toString().getBytes(StandardCharsets.UTF_8));
         }
     }
 
@@ -501,7 +494,7 @@ public class AptWriter
         return pf;
     }
 
-    public static String digest ( final File file, final Digest digest ) throws IOException
+    public static String digest ( final File file, final MessageDigest digest ) throws IOException
     {
         try ( final InputStream in = new FileInputStream ( file ) )
         {
@@ -511,8 +504,7 @@ public class AptWriter
             {
                 digest.update ( buffer, 0, rc );
             }
-            final byte[] dv = new byte[digest.getDigestSize ()];
-            digest.doFinal ( dv, 0 );
+            final byte[] dv = digest.digest ();
             final StringBuilder sb = new StringBuilder ();
             for ( final byte b : dv )
             {
