@@ -21,4 +21,4 @@ jobs:
           java-version: '8'
 
       - run: |
-          mvn package
+          mvn package -B
