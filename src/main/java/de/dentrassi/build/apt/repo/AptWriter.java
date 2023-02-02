@@ -145,7 +145,7 @@ public class AptWriter
 
     static
     {
-        DF = new SimpleDateFormat ( "EEE, dd MMM YYYY HH:mm:ss z", Locale.US );
+        DF = new SimpleDateFormat ( "EEE, dd MMM yyyy HH:mm:ss z", Locale.US );
         DF.setTimeZone ( TimeZone.getTimeZone ( "UTC" ) );
     }
 
