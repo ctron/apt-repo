@@ -3,13 +3,13 @@ Integration Tests
 
 Run the integration tests by:
 
- mvn clean integration-test
+    mvn clean integration-test
 
 Release Build
 ==============
 
- mvn release:clean release:prepare
+    mvn release:clean release:prepare
 
 Check
 
- mvn release:perform
+    mvn release:perform
