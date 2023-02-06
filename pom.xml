@@ -4,7 +4,7 @@
 
 	<groupId>de.dentrassi.build</groupId>
 	<artifactId>apt-repo</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.3</version>
 
 	<name>APT Repository Generator</name>
 	<description>Create APT based repositories</description>
@@ -17,7 +17,8 @@
 		<connection>scm:git:git@github.com:ctron/apt-repo.git</connection>
 		<developerConnection>scm:git:git@github.com:ctron/apt-repo.git</developerConnection>
 		<url>git@github.com:ctron/apt-repo.git</url>
-	</scm>
+	  <tag>apt-repo-0.0.3</tag>
+  </scm>
 
 	<inceptionYear>2014</inceptionYear>
 
