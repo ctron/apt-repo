@@ -48,6 +48,7 @@ import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.CanReadFileFilter;
@@ -447,9 +448,9 @@ public class AptWriter
             ArchiveEntry ar;
             while ( ( ar = in.getNextEntry () ) != null )
             {
-                if ( ar.getName().equals ( "control.tar.gz" ) || ar.getName().equals ( "control.tar.xz" ) )
+                if ( ar.getName().equals ( "control.tar.gz" ) || ar.getName().equals ( "control.tar.xz" ) || ar.getName().equals ( "control.tar.zst" ) )
                 {
-                    try (final InputStream compressedInputStream = ar.getName().endsWith(".gz") ? new GZIPInputStream ( in ) : new XZCompressorInputStream( in );
+                    try (final InputStream compressedInputStream = ar.getName().endsWith(".gz") ? new GZIPInputStream ( in ) : ( ar.getName().endsWith(".xz") ? new XZCompressorInputStream( in ) : new ZstdCompressorInputStream( in ) );
                          final TarArchiveInputStream inputStream = new TarArchiveInputStream ( compressedInputStream ) ) {
 
                         TarArchiveEntry te;
