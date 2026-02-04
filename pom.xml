@@ -73,6 +73,12 @@
 		</dependency>
 
 		<dependency>
+            <groupId>com.github.luben</groupId>
+            <artifactId>zstd-jni</artifactId>
+			<version>1.5.7-6</version>
+        </dependency>
+
+		<dependency>
 			<groupId>org.apache.maven.plugin-tools</groupId>
 			<artifactId>maven-plugin-annotations</artifactId>
 			<version>${maven-plugin.version}</version>
