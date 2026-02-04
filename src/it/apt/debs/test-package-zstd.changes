@@ -1,0 +1,21 @@
+Format: 1.8
+Date: Wed, 04 Feb 2026 12:00:00 +0100
+Source: test-package-zstd
+Binary: test-package-zstd
+Architecture: all
+Version: 1.0
+Distribution: unknown
+Urgency: low
+Maintainer: user@host.com
+Changed-By: user@host.com
+Description:
+ test-package-zstd - description
+Changes:
+ test-package-zstd (1.0) unknown; urgency=low
+Checksums-Sha1:
+ c85e2aced220f897a3d2635c5d610feb80f7c0db 558 test-package-zstd.deb
+Checksums-Sha256:
+ 2cb2d6e554f0badd99a94cb343d08e905ce865afaa640763005939495d637694 558 test-package-zstd.deb
+Files:
+ 80d4030fa0014a513a24fd085a6886a8 558 misc low test-package-zstd.deb
+ 
