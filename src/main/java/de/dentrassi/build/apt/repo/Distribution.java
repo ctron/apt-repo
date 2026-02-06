@@ -99,7 +99,7 @@ public class Distribution
     }
 
     /**
-     * Add a new component to the distribution. <br/>
+     * Add a new component to the distribution. <br>
      * The component is copied and cannot be altered after adding
      * 
      * @param component
