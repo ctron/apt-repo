@@ -4,7 +4,7 @@
 
 	<groupId>de.dentrassi.build</groupId>
 	<artifactId>apt-repo</artifactId>
-	<version>0.0.4-SNAPSHOT</version>
+	<version>0.1.0</version>
 
 	<name>APT Repository Generator</name>
 	<description>Create APT based repositories</description>
