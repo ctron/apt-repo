@@ -383,7 +383,7 @@
 								<additionalOptions>
 									<additionalOption>-html5</additionalOption>
 								</additionalOptions>
-								<skip>true</skip>
+								<skip>false</skip>
 							</configuration>
 						</plugin>
 					</plugins>
