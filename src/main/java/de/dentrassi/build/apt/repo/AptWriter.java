@@ -67,21 +67,21 @@ import org.vafer.jdeb.debian.BinaryPackageControlFile;
  * </p>
  * <p>
  * Here is what this class can do:
+ * </p>
  * <ul>
  * <li>Copy all source files to a "pool"</li>
  * <li>Extract the metadata and write Packages files</li>
  * <li>Create Release files for components and distributions</li>
  * <li>Create checksum for all files</li>
  * </ul>
- * </p>
  * <p>
  * At the moment this class is still missing some functionality:
+ * </p>
  * <ul>
  * <li>Signing is not implemented</li>
  * <li>Compression of index files is not implemented</li>
  * <li>And maybe a few other things</li>
  * </ul>
- * </p>
  * 
  * @author Jens Reimann
  */
