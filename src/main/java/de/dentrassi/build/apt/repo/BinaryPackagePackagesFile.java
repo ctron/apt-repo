@@ -92,7 +92,7 @@ public final class BinaryPackagePackagesFile extends ControlFile
      * Returns the short description of the package. The short description
      * consists in the first line of the Description field.
      * 
-     * @return
+     * @return short description
      */
     public String getShortDescription ()
     {
